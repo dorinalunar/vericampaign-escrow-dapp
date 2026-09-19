@@ -1,1 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeriCampaign | Intelligent Escrow</title>
+    <style>
+        /* ==========================================
+           BASE VARIABLES & RESET
+           ========================================== */
+        :root {
+            --bg-main: #050505;
+            --bg-card: #111111;
+            --bg-card-hover: #161616;
+            --border-color: #222222;
+            --text-primary: #ffffff;
+            --text-secondary: #999999;
+            --accent: #ffffff;
+            --accent-invert: #000000;
+            --success: #e0e0e0;
+            --font-main: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            width: 100%;
+        }
+
+        /* ==========================================
+           NAVIGATION
+           ========================================== */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .logo-icon { width: 32px; height: 32px; }
+
+        .nav-links {
+            display: none;
+            gap: 32px;
+        }
+        @media (min-width: 768px) { .nav-links { display: flex; } }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--text-primary); }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: var(--accent-invert);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-primary:active { transform: scale(0.98); }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-outline:hover { background-color: rgba(255,255,255,0.05); border-color: #444; }
+
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background-color: #555; }
+        .status-dot.connected { background-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+
+        /* ==========================================
+           HERO SECTION
+           ========================================== */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 64px;
+            padding: 100px 0;
+            align-items: center;
+            position: relative;
+        }
+        @media (min-width: 992px) { .hero { grid-template-columns: 1.2fr 0.8fr; } }
+
+        .tagline {
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            display: block;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 5vw, 5rem);
+            font-weight: 600;
+            line-height: 1.05;
+            letter-spacing: -0.04em;
+            margin-bottom: 24px;
+        }
+        .hero h1 .subdued { color: var(--text-secondary); }
+
+        .hero p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 480px;
+            margin-bottom: 48px;
+            line-height: 1.6;
+        }
+
+        .hero-actions { display: flex; gap: 16px; align-items: center; }
+        .hero-actions .learn-more { color: var(--text-primary); text-decoration: none; font-size: 14px; font-weight: 500; }
+
+        .hero-graphic {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+        }
+        .huge-logo { width: 100%; max-width: 450px; opacity: 0.9; }
+        
+        .side-labels {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            color: var(--text-secondary);
+        }
+
+        /* ==========================================
+           FEATURES CARDS
+           ========================================== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            padding-bottom: 100px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        @media (min-width: 768px) { .features-grid { grid-template-columns: repeat(3, 1fr); } }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 32px;
+            display: flex;
+            gap: 20px;
+            transition: background-color 0.2s;
+        }
+        .card:hover { background-color: var(--bg-card-hover); }
+
+        .card-icon {
+            width: 40px; height: 40px;
+            background: #1a1a1a;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .card-icon svg { width: 20px; height: 20px; fill: #fff; }
+
+        .card-content h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+        .card-content p { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+
+        /* ==========================================
+           ARCHITECTURE FLOWCHART (HOW IT WORKS)
+           ========================================== */
+        .architecture-section { 
+            padding: 100px 0; 
+            border-bottom: 1px solid var(--border-color); 
+        }
+        .section-header { 
+            margin-bottom: 64px; 
+            text-align: center; 
+        }
+        .section-header h2 { 
+            font-size: 2.5rem; 
+            font-weight: 600; 
+            letter-spacing: -0.03em; 
+            margin-bottom: 16px; 
+        }
+        
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 28px;
+            background: #080808;
+            border: 1px solid var(--border-color);
+            border-radius: 28px;
+            padding: 56px 40px;
+            overflow-x: auto;
+        }
+
+        .flow-row { 
+            display: flex; 
+            align-items: stretch; 
+            gap: 20px; 
+            width: 100%; 
+            justify-content: center; 
+            min-width: 960px;
+        }
+
+        .step-card {
+            background: #0d0d0d;
+            border: 1px solid #1f1f1f;
+            border-radius: 20px;
+            padding: 24px 28px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1 1 0;
+            width: 100%;
+            max-width: 380px;
+            min-height: 140px;
+            box-sizing: border-box;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+        .step-card:hover {
+            border-color: #333333;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .step-icon-wrap {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: #171717;
+            border: 1px solid #262626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .step-icon-wrap svg {
+            width: 22px;
+            height: 22px;
+            stroke: #d4d4d4;
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .step-body {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .step-badge {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            color: #737373;
+            text-transform: uppercase;
+        }
+        .step-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #ffffff;
+            line-height: 1.3;
+        }
+        .step-sub {
+            font-size: 13px;
+            color: #808080;
+            line-height: 1.4;
+            margin-top: 2px;
+        }
+
+        .flow-arrow { 
+            color: #404040; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .flow-arrow svg {
+            width: 20px;
+            height: 20px;
+            stroke: #4b5563;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .flow-connector-vertical {
+            width: 2px;
+            height: 32px;
+            border-left: 2px dotted #2f2f2f;
+            margin: 4px 0;
+        }
+
+        .outcome-card {
+            background: #0b0b0b;
+            border-radius: 20px;
+            padding: 28px 24px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex: 1 1 0;
+            width: 100%;
+            max-width: 380px;
+            min-height: 160px;
+            box-sizing: border-box;
+            transition: all 0.25s ease;
+        }
+        .outcome-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .outcome-header {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+        .glow-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+        }
+
+        .outcome-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        .outcome-sub {
+            font-size: 13px;
+            color: #737373;
+            line-height: 1.4;
+        }
+
+        .outcome-approved {
+            border: 1px solid rgba(74, 222, 128, 0.28);
+            background: linear-gradient(180deg, rgba(74, 222, 128, 0.03) 0%, #0a0e0b 100%);
+        }
+        .outcome-approved:hover {
+            border-color: rgba(74, 222, 128, 0.5);
+            box-shadow: 0 0 25px rgba(74, 222, 128, 0.08);
+        }
+        .outcome-approved .outcome-header { color: #4ade80; }
+        .outcome-approved .glow-dot { 
+            background: #4ade80; 
+            box-shadow: 0 0 8px #4ade80; 
+        }
+
+        .outcome-revision {
+            border: 1px solid rgba(251, 191, 36, 0.28);
+            background: linear-gradient(180deg, rgba(251, 191, 36, 0.03) 0%, #0e0c08 100%);
+        }
+        .outcome-revision:hover {
+            border-color: rgba(251, 191, 36, 0.5);
+            box-shadow: 0 0 25px rgba(251, 191, 36, 0.08);
+        }
+        .outcome-revision .outcome-header { color: #fbbf24; }
+        .outcome-revision .glow-dot { 
+            background: #fbbf24; 
+            box-shadow: 0 0 8px #fbbf24; 
+        }
+
+        .outcome-rejected {
+            border: 1px solid rgba(248, 113, 113, 0.28);
+            background: linear-gradient(180deg, rgba(248, 113, 113, 0.03) 0%, #0e0909 100%);
+        }
+        .outcome-rejected:hover {
+            border-color: rgba(248, 113, 113, 0.5);
+            box-shadow: 0 0 25px rgba(248, 113, 113, 0.08);
+        }
+        .outcome-rejected .outcome-header { color: #f87171; }
+        .outcome-rejected .glow-dot { 
+            background: #f87171; 
+            box-shadow: 0 0 8px #f87171; 
+        }
+
+        /* ==========================================
+           DASHBOARD (WORK AREA)
+           ========================================== */
+        .dashboard-section { padding: 100px 0; }
+        .dash-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; }
+        .contract-address { font-family: monospace; color: var(--text-secondary); background: var(--bg-card); padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border-color); }
+
+        .dash-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+        @media (min-width: 992px) { .dash-grid { grid-template-columns: 1fr 1fr; } }
+
+        .dash-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 32px;
+        }
+        .dash-panel h3 { font-size: 20px; font-weight: 600; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); }
+
+        .form-group { margin-bottom: 20px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 8px; }
+        
+        input, textarea, select {
+            width: 100%;
+            background: #050505;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-family: var(--font-main);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus, textarea:focus { border-color: #fff; }
+        textarea { resize: vertical; min-height: 80px; }
+
+        .btn-submit {
+            width: 100%;
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            margin-top: 8px;
+        }
+        .btn-submit:hover { opacity: 0.9; }
+        .btn-secondary { background: transparent; color: #fff; border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.05); }
+
+        .divider { height: 1px; background: var(--border-color); margin: 32px 0; }
+
+        .console {
+            background: #000;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--text-secondary);
+            min-height: 80px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 16px;
+            white-space: pre-wrap;
+        }
+
+        /* ==========================================
+           FOOTER
+           ========================================== */
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 40px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- NAVIGATION -->
+        <nav>
+            <div class="logo-area">
+                <img src="logo.svg" alt="Veri" class="logo-icon">
+                VeriCampaign
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#architecture">Architecture</a>
+                <a href="#dashboard">dApp</a>
+            </div>
+            <button id="connectBtn" class="btn-outline">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="walletText">Connect Wallet</span>
+            </button>
+        </nav>
+
+        <!-- HERO SECTION -->
+        <main class="hero">
+            <div class="hero-text">
+                <span class="tagline">Verify What Matters</span>
+                <h1>Intelligent Escrow.<br><span class="subdued">Real verification.</span></h1>
+                <p>VeriCampaign helps individuals and sponsors confirm brand deliverables, protect funds, and build trust — autonomously powered by GenVM.</p>
+                <div class="hero-actions">
+                    <a href="#dashboard" class="btn-primary">Launch dApp &rarr;</a>
+                    <a href="#architecture" class="learn-more">How it works &rarr;</a>
+                </div>
+            </div>
+            <div class="hero-graphic">
+                <img src="logo.svg" alt="Veri Graphic" class="huge-logo">
+                <div class="side-labels">
+                    <span>C L E A R</span>
+                    <span>S E C U R E</span>
+                    <span>A U T O N O M O U S</span>
+                    <span style="width: 20px; height: 1px; background: #555; margin-top: 8px;"></span>
+                </div>
+            </div>
+        </main>
+
+        <!-- FEATURES CARDS -->
+        <section id="features" class="features-grid">
+            <div class="card">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div class="card-content">
+                    <h3>Strict Policy</h3>
+                    <p>Built-in source-policy URL controls. Blocks SSRF, private IPs, and non-text binary payloads automatically.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                </div>
+                <div class="card-content">
+                    <h3>GenVM Consensus</h3>
+                    <p>Gets verification results via comparative AI consensus. Validates guidelines, mentions, and exact payouts.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div class="card-content">
+                    <h3>For Everyone</h3>
+                    <p>Multi-role architecture. Sponsors fund, Creators submit, Arbiters resolve disputes. Fully trustless escrow.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ARCHITECTURE FLOWCHART -->
+        <section id="architecture" class="architecture-section">
+            <div class="section-header">
+                <h2>A more trusted workflow.</h2>
+                <p style="color: var(--text-secondary);">We believe verification should be simple, secure, and fully on-chain.</p>
+            </div>
+            
+            <div class="flowchart">
+                <!-- Top Row: Process Steps -->
+                <div class="flow-row">
+                    <!-- Step 1: Sponsor -->
+                    <div class="step-card">
+                        <div class="step-icon-wrap">
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="8" r="4"></circle>
+                                <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+                            </svg>
+                        </div>
+                        <div class="step-body">
+                            <span class="step-badge">01 SPONSOR</span>
+                            <div class="step-title">Creates Campaign & Funds Bounties</div>
+                            <div class="step-sub">Set requirements, fund escrow, launch campaign.</div>
+                        </div>
+                    </div>
+
+                    <div class="flow-arrow">
+                        <svg viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+                    </div>
+
+                    <!-- Step 2: Creator -->
+                    <div class="step-card">
+                        <div class="step-icon-wrap">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                            </svg>
+                        </div>
+                        <div class="step-body">
+                            <span class="step-badge">02 CREATOR</span>
+                            <div class="step-title">Accepts & Submits Content URL</div>
+                            <div class="step-sub">Creates content and submits for verification.</div>
+                        </div>
+                    </div>
+
+                    <div class="flow-arrow">
+                        <svg viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+                    </div>
+
+                    <!-- Step 3: GenVM AI -->
+                    <div class="step-card">
+                        <div class="step-icon-wrap">
+                            <svg viewBox="0 0 24 24">
+                                <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/>
+                            </svg>
+                        </div>
+                        <div class="step-body">
+                            <span class="step-badge">03 GENVM AI</span>
+                            <div class="step-title">Web Fetch + Policy Check + Audit</div>
+                            <div class="step-sub">AI verifies content against rules and campaign requirements.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Connector -->
+                <div class="flow-connector-vertical"></div>
+
+                <!-- Bottom Row: Outcomes -->
+                <div class="flow-row">
+                    <!-- Approved -->
+                    <div class="outcome-card outcome-approved">
+                        <div class="outcome-header">
+                            <span class="glow-dot"></span>
+                            APPROVED
+                        </div>
+                        <div class="outcome-title">Funds Released</div>
+                        <div class="outcome-sub">Creator gets paid automatically from escrow.</div>
+                    </div>
+
+                    <!-- Revision -->
+                    <div class="outcome-card outcome-revision">
+                        <div class="outcome-header">
+                            <span class="glow-dot"></span>
+                            REVISION / PARTIAL
+                        </div>
+                        <div class="outcome-title">Pro-rata Payout or Retry</div>
+                        <div class="outcome-sub">Partial reward or resubmit after adjustments.</div>
+                    </div>
+
+                    <!-- Rejected -->
+                    <div class="outcome-card outcome-rejected">
+                        <div class="outcome-header">
+                            <span class="glow-dot"></span>
+                            REJECTED
+                        </div>
+                        <div class="outcome-title">Funds Refunded</div>
+                        <div class="outcome-sub">Escrow returned to sponsor.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DASHBOARD (WORK AREA) -->
+        <section id="dashboard" class="dashboard-section">
+            <div class="dash-header">
+                <div>
+                    <h2 style="font-size: 2.5rem; font-weight: 600; margin-bottom: 8px;">Command Center</h2>
+                    <p style="color: var(--text-secondary);">Execute on-chain transactions via GenLayer Studio Network.</p>
+                </div>
+                <div class="contract-address" id="contractAddr">Contract: 0x... (Deploy First)</div>
+            </div>
+
+            <div class="dash-grid">
+                
+                <!-- PANEL 1: SPONSOR -->
+                <div class="dash-panel">
+                    <h3>1. Sponsor Setup</h3>
+                    
+                    <div class="form-group">
+                        <label>Create Campaign</label>
+                        <input type="text" id="campTitle" placeholder="Campaign Title" style="margin-bottom: 12px;">
+                        <textarea id="campDesc" placeholder="Description" style="margin-bottom: 12px;"></textarea>
+                        <div class="form-row">
+                            <input type="text" id="campArbiter" placeholder="Arbiter Address 0x...">
+                            <input type="number" id="campDeadline" placeholder="Deadline (Seconds)">
+                        </div>
+                        <input type="number" id="campBond" placeholder="Required Bond (Wei)" style="margin-top: 12px;">
+                        <button class="btn-submit" id="btnCreateCampaign">Create Campaign</button>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="form-group">
+                        <label>Add Bounty to Campaign</label>
+                        <input type="number" id="bountyCampId" placeholder="Campaign ID" style="margin-bottom: 12px;">
+                        <input type="text" id="bountyTitle" placeholder="Bounty Title" style="margin-bottom: 12px;">
+                        <textarea id="bountyGuidelines" placeholder="Brand Guidelines" style="margin-bottom: 12px;"></textarea>
+                        <div class="form-row">
+                            <input type="number" id="bountyAmount" placeholder="Amount (Wei)">
+                            <button class="btn-submit btn-secondary" style="margin-top: 0;" id="btnAddBounty">Fund Bounty</button>
+                        </div>
+                    </div>
+                    <div id="sponsorConsole" class="console">Awaiting sponsor action...</div>
+                </div>
+
+                <!-- PANEL 2: CREATOR -->
+                <div class="dash-panel">
+                    <h3>2. Creator Actions</h3>
+                    
+                    <div class="form-group">
+                        <label>Accept Campaign</label>
+                        <div class="form-row">
+                            <input type="number" id="acceptCampId" placeholder="Campaign ID">
+                            <input type="number" id="acceptBond" placeholder="Bond Value (Wei)">
+                        </div>
+                        <button class="btn-submit btn-secondary" id="btnAcceptCampaign">Accept & Lock Bond</button>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="form-group">
+                        <label>Submit Content URL</label>
+                        <input type="number" id="subCampId" placeholder="Campaign ID" style="margin-bottom: 12px;">
+                        <input type="number" id="subBountyIdx" placeholder="Bounty Index" style="margin-bottom: 12px;">
+                        <input type="text" id="subUrl" placeholder="https://..." style="margin-bottom: 12px;">
+                        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Note: Source-policy blocks localhost, private IPs, and binary extensions.</p>
+                        <button class="btn-submit" id="btnSubmitContent">Submit for Review</button>
+                    </div>
+                    <div id="creatorConsole" class="console">Awaiting creator action...</div>
+                </div>
+
+                <!-- PANEL 3: AI VERIFICATION -->
+                <div class="dash-panel">
+                    <h3>3. AI Verification</h3>
+                    
+                    <div class="form-group">
+                        <label>Request GenVM Audit</label>
+                        <div class="form-row">
+                            <input type="number" id="aiCampId" placeholder="Campaign ID">
+                            <input type="number" id="aiBountyIdx" placeholder="Bounty Index">
+                        </div>
+                        <button class="btn-submit" style="background-color: var(--bg-card); border: 1px solid #fff; color: #fff; box-shadow: inset 0 0 10px rgba(255,255,255,0.1);" id="btnRequestVerification">Run Intelligent Verification</button>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="form-group">
+                        <label>Read State (Views)</label>
+                        <div class="form-row" style="margin-bottom: 12px;">
+                            <input type="number" id="viewCampId" placeholder="Campaign ID">
+                            <input type="number" id="viewBountyIdx" placeholder="Bounty Index (Optional)">
+                        </div>
+                        <div class="form-row">
+                            <button class="btn-submit btn-secondary" style="margin-top: 0;" id="btnViewCampaign">Get Campaign</button>
+                            <button class="btn-submit btn-secondary" style="margin-top: 0;" id="btnViewBounty">Get Bounty</button>
+                        </div>
+                    </div>
+                    <div id="aiConsole" class="console">Awaiting AI consensus...</div>
+                </div>
+
+                <!-- PANEL 4: ARBITRATION & ADMIN -->
+                <div class="dash-panel">
+                    <h3>4. Arbitration & Controls</h3>
+                    
+                    <div class="form-group">
+                        <label>Raise / Resolve Dispute</label>
+                        <div class="form-row" style="margin-bottom: 12px;">
+                            <input type="number" id="dispCampId" placeholder="Campaign ID">
+                            <input type="number" id="dispBountyIdx" placeholder="Bounty Index">
+                        </div>
+                        <input type="text" id="dispReason" placeholder="Reason / Note" style="margin-bottom: 12px;">
+                        <div class="form-row">
+                            <button class="btn-submit btn-secondary" style="margin-top: 0; color: #f87171; border-color: #f87171;" id="btnRaiseDispute">Raise Dispute</button>
+                            <select id="dispVerdict">
+                                <option value="APPROVE">APPROVE</option>
+                                <option value="REJECT">REJECT</option>
+                            </select>
+                        </div>
+                        <button class="btn-submit btn-secondary" id="btnResolveDispute">Resolve Dispute (Arbiter)</button>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="form-group">
+                        <label>Protocol Admin</label>
+                        <div class="form-row">
+                            <select id="pauseState">
+                                <option value="true">Pause Protocol</option>
+                                <option value="false">Unpause Protocol</option>
+                            </select>
+                            <button class="btn-submit btn-secondary" style="margin-top: 0;" id="btnSetPaused">Execute</button>
+                        </div>
+                    </div>
+                    <div id="adminConsole" class="console">Awaiting admin action...</div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer>
+            <div class="logo-area" style="font-size: 16px;">
+                <img src="logo.svg" alt="Veri" style="width: 20px; height: 20px; opacity: 0.5;">
+                VeriCampaign
+            </div>
+            <div>
+                &copy; 2026 Veri. All rights reserved.
+            </div>
+        </footer>
+    </div>
+
+    <script type="module" src="./main.js"></script>
+</body>
+</html>

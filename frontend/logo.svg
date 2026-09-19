@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+    <!-- Dark rounded background -->
+    <rect width="100" height="100" rx="22" fill="#111111" />
+    
+    <!-- Letter C representing Campaign/Escrow -->
+    <path d="M 70 30 A 26 26 0 1 0 70 70" 
+          fill="none" 
+          stroke="#737373" 
+          stroke-width="10" 
+          stroke-linecap="round" />
+          
+    <!-- Letter V / Verification checkmark -->
+    <path d="M 35 50 L 48 65 L 78 32" 
+          fill="none" 
+          stroke="#FFFFFF" 
+          stroke-width="10" 
+          stroke-linecap="round" 
+          stroke-linejoin="round" />
+</svg>
