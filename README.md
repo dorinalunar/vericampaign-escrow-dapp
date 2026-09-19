@@ -38,7 +38,7 @@
 This dApp demonstrates a resilient, mobile-friendly Web3 architecture tailored specifically for the GenLayer ecosystem:
 
 * **Smart Contract:** Native Python using the py-genlayer SDK, implementing deterministic state machines alongside non-deterministic web retrieval and comparative AI consensus.
-* **Source-Policy Guardrails:** On-chain URL sanitization blocking SSRF, private IPs (localhost, 127.0.0.1, RFC 1918), oversized payloads, and non-text binary extensions.
+* **Source-Policy Guardrails:** On-chain URL sanitization blocking SSRF, private IPs, oversized payloads, and non-text binary extensions.
 * **Frontend Modular Design:** Built with Vanilla JS and ES Modules (via esm.sh) for seamless browser deployment with zero build tools.
 * **SDK Integration:** Utilizes official genlayer-js for both contract write operations (MetaMask EIP-1193 provider with chain auto-switching) and deterministic state queries.
 
@@ -63,7 +63,7 @@ This dApp demonstrates a resilient, mobile-friendly Web3 architecture tailored s
 
 ## 🚀 How to Use the dApp
 
-The frontend is divided into four main operational panels. Connect your wallet (GenLayer Studio network) and follow the flow:
+The frontend is divided into four main operational panels. Connect your wallet (GenLayer Studio network) directly via the [Live dApp](https://dorinalunar.github.io/vericampaign-escrow-dapp/frontend/) and follow the flow:
 
 ### 1. ⚙️ Setup & Admin (Sponsor Setup)
 * **Create Campaign:** Provide title, description, arbiter address, deadline duration, and bond requirement.
@@ -83,13 +83,12 @@ The frontend is divided into four main operational panels. Connect your wallet (
 
 ---
 
-## 🔧 Local Development
+## 🌐 Live Access
 
-Since the dApp is built with a modular Vanilla JS architecture and uses CDN imports (esm.sh), running it locally requires zero build tools:
+The dApp is hosted statically on GitHub Pages and runs directly in the browser:
 
-1. Clone the repository: `git clone https://github.com/dorinalunar/vericampaign-escrow-dapp.git`
-2. Open `frontend/index.html` in any modern web browser or serve via: `python -m http.server 8158`
-3. Connect your MetaMask to the GenLayer Studio network.
+* **Production URL:** [https://dorinalunar.github.io/vericampaign-escrow-dapp/frontend/](https://dorinalunar.github.io/vericampaign-escrow-dapp/frontend/)
+* Connect MetaMask to the GenLayer Studio network (`0xf22f`) to begin interacting.
 
 ---
 
